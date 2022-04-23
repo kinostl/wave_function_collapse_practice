@@ -12,33 +12,14 @@ class ArraySet extends Set {
   }
 }
 
-/*
 const e = [
-  [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-  ['▛', '▀', '▀', ' ', '▀', '▀', '▜', '▛', '▀', '▀', ' ', '▀', '▀', '▜'],
-  ['▌', ' ', ' ', ' ', ' ', ' ', '▐', '▌', ' ', ' ', ' ', ' ', ' ', '▐'],
-  ['▌', ' ', ' ', ' ', ' ', ' ', '▐', '▌', ' ', ' ', ' ', ' ', ' ', '▐'],
-  [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-  ['▌', ' ', ' ', ' ', ' ', ' ', '▐', '▌', ' ', ' ', ' ', ' ', ' ', '▐'],
-  ['▌', ' ', ' ', ' ', ' ', ' ', '▐', '▌', ' ', ' ', ' ', ' ', ' ', '▐'],
-  ['▙', '▄', '▄', ' ', '▄', '▄', '▟', '▙', '▄', '▄', ' ', '▄', '▄', '▟'],
-  ['▛', '▀', '▀', ' ', '▀', '▀', '▜', '▛', '▀', '▀', ' ', '▀', '▀', '▜'],
-  ['▌', ' ', ' ', ' ', ' ', ' ', '▐', '▌', ' ', ' ', ' ', ' ', ' ', '▐'],
-  ['▌', ' ', ' ', ' ', ' ', ' ', '▐', '▌', ' ', ' ', ' ', ' ', ' ', '▐'],
-  [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-  ['▌', ' ', ' ', ' ', ' ', ' ', '▐', '▌', ' ', ' ', ' ', ' ', ' ', '▐'],
-  ['▌', ' ', ' ', ' ', ' ', ' ', '▐', '▌', ' ', ' ', ' ', ' ', ' ', '▐'],
-  ['▙', '▄', '▄', ' ', '▄', '▄', '▟', '▙', '▄', '▄', ' ', '▄', '▄', '▟']
-]
-*/
-const e = [
-  ['X', 'X', 'X', 'X', 'X', 'X', 'X'],
-  ['X', 'X', 'X', 'X', ' ', ' ', 'X'],
-  ['X', 'X', 'X', 'X', ' ', ' ', 'X'],
-  [' ', ' ', '0', ' ', ' ', ' ', 'X'],
-  ['X', 'X', 'X', 'X', ' ', ' ', 'X'],
-  ['X', 'X', 'X', 'X', ' ', ' ', 'X'],
-  ['X', 'X', 'X', 'X', 'X', 'X', 'X']
+	['█','█','█','█','█','█','█','█','█'],
+	[' ',' ',' ',' ',' ',' ',' ',' ',' '],
+	['█','█','█',' ','█',' ','█','█','█'],
+	['█','█','█',' ','█','█','█',' ',' '],
+	['█',' ','█',' ','█',' ','█',' ','█'],
+	['█',' ',' ',' ','█',' ',' ',' ',' '],
+	['█','█','█',' ','█',' ','█','█','█'],
 ]
 
 let tuples = new ArraySet()
@@ -123,8 +104,13 @@ const getLowestEntropy = () => {
   return lowestEntropyTile
 }
 
-const getValidOptions = (tile, direction) => {
-  return tuples.filter(o => o[0] === tile && o[1] === direction).map(o => o[2])
+const getValidOptions = (tile, direction, options) => {
+  const filteredTuples = tuples
+    .filter(o => o[0] === tile && o[1] === direction)
+    .map(o => o[2])
+  const handledOptions = _.intersection(filteredTuples, options)
+  if (handledOptions.length > 0) return handledOptions
+  return handledOptions[0]
 }
 const iterate = () => {
   const { x, y, options } = getLowestEntropy()
@@ -140,7 +126,7 @@ const iterate = () => {
       blankMap[y - 1][x] = {
         x,
         y: y - 1,
-        options: getValidOptions(chosenTile, 'b')
+        options: getValidOptions(chosenTile, 'b', blankMap[y - 1][x].options)
       }
     }
   }
@@ -149,7 +135,7 @@ const iterate = () => {
       blankMap[y][x + 1] = {
         x: x + 1,
         y,
-        options: getValidOptions(chosenTile, 'l')
+        options: getValidOptions(chosenTile, 'l', blankMap[y][x + 1].options)
       }
     }
   }
@@ -158,7 +144,7 @@ const iterate = () => {
       blankMap[y + 1][x] = {
         x,
         y: y + 1,
-        options: getValidOptions(chosenTile, 'a')
+        options: getValidOptions(chosenTile, 'a', blankMap[y + 1][x].options)
       }
     }
   }
@@ -167,7 +153,7 @@ const iterate = () => {
       blankMap[y][x - 1] = {
         x: x - 1,
         y,
-        options: getValidOptions(chosenTile, 'r')
+        options: getValidOptions(chosenTile, 'r', blankMap[y][x - 1].options)
       }
     }
   }
